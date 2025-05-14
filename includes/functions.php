@@ -1,3 +1,673 @@
+<?php
+/**
+ * Utility Functions
+ * 
+ * Core utility functions for the PayTrack application
+ * Handles common operations across the application
+ */
+
+// Make sure we have a session started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+/**
+ * Get base URL path for the application
+ * 
+ * @return string The base URL path
+ */
+function getBasePath() {
+    $path = dirname($_SERVER['PHP_SELF']);
+    
+    if (strpos($path, '/admin') !== false) {
+        return '..';
+    } elseif (strpos($path, '/client') !== false) {
+        return '..';
+    } else {
+        return '.';
+    }
+}
+
+/**
+ * Check if the current page matches the given page name
+ * Used for highlighting active navigation items
+ * 
+ * @param string $pageName The page name to check against
+ * @return bool True if current page matches, false otherwise
+ */
+function isCurrentPage($pageName) {
+    return basename($_SERVER['PHP_SELF']) === $pageName;
+}
+
+/**
+ * Format a date to a readable format
+ * 
+ * @param string $date The date string to format
+ * @param string $format The format to use (default: 'M d, Y')
+ * @return string The formatted date
+ */
+function formatDate($date, $format = 'M d, Y') {
+    if (empty($date)) return 'N/A';
+    
+    $dateObj = new DateTime($date);
+    return $dateObj->format($format);
+}
+
+/**
+ * Format a currency amount
+ * 
+ * @param float $amount The amount to format
+ * @param string $currency The currency symbol (default: '$')
+ * @return string The formatted amount
+ */
+function formatCurrency($amount, $currency = '$') {
+    if ($amount === null) return 'N/A';
+    
+    return $currency . number_format($amount, 2, '.', ',');
+}
+
+/**
+ * Calculate the percentage of a value against a total
+ * 
+ * @param float $value The value
+ * @param float $total The total
+ * @return int The percentage (rounded to nearest integer)
+ */
+function calculatePercentage($value, $total) {
+    if ($total == 0) return 0;
+    
+    return round(($value / $total) * 100);
+}
+
+/**
+ * Generate a unique ID for various purposes
+ * 
+ * @param string $prefix The prefix for the ID (default: '')
+ * @return string The generated ID
+ */
+function generateUniqueId($prefix = '') {
+    return uniqid($prefix) . bin2hex(random_bytes(8));
+}
+
+/**
+ * Get project status as a string and corresponding color class
+ * 
+ * @param string $status The status code
+ * @return array Array containing status text and color class
+ */
+function getProjectStatus($status) {
+    switch ($status) {
+        case 'not_started':
+            return [
+                'text' => 'Not Started',
+                'color' => 'text-gray-400',
+                'bg' => 'bg-gray-800',
+                'badge' => 'border-gray-600'
+            ];
+        case 'in_progress':
+            return [
+                'text' => 'In Progress',
+                'color' => 'text-blue-400',
+                'bg' => 'bg-blue-900/30',
+                'badge' => 'border-blue-600'
+            ];
+        case 'on_hold':
+            return [
+                'text' => 'On Hold',
+                'color' => 'text-yellow-400',
+                'bg' => 'bg-yellow-900/30',
+                'badge' => 'border-yellow-600'
+            ];
+        case 'completed':
+            return [
+                'text' => 'Completed',
+                'color' => 'text-green-400',
+                'bg' => 'bg-green-900/30',
+                'badge' => 'border-green-600'
+            ];
+        case 'cancelled':
+            return [
+                'text' => 'Cancelled',
+                'color' => 'text-red-400',
+                'bg' => 'bg-red-900/30',
+                'badge' => 'border-red-600'
+            ];
+        default:
+            return [
+                'text' => 'Unknown',
+                'color' => 'text-gray-400',
+                'bg' => 'bg-gray-800',
+                'badge' => 'border-gray-600'
+            ];
+    }
+}
+
+/**
+ * Get payment status as a string and corresponding color class
+ * 
+ * @param string $status The status code
+ * @return array Array containing status text and color class
+ */
+function getPaymentStatus($status) {
+    switch ($status) {
+        case 'paid':
+            return [
+                'text' => 'Paid',
+                'color' => 'text-green-400',
+                'bg' => 'bg-green-900/30',
+                'badge' => 'border-green-600'
+            ];
+        case 'pending':
+            return [
+                'text' => 'Pending',
+                'color' => 'text-yellow-400',
+                'bg' => 'bg-yellow-900/30',
+                'badge' => 'border-yellow-600'
+            ];
+        case 'overdue':
+            return [
+                'text' => 'Overdue',
+                'color' => 'text-red-400',
+                'bg' => 'bg-red-900/30',
+                'badge' => 'border-red-600'
+            ];
+        case 'cancelled':
+            return [
+                'text' => 'Cancelled',
+                'color' => 'text-gray-400',
+                'bg' => 'bg-gray-800',
+                'badge' => 'border-gray-600'
+            ];
+        case 'refunded':
+            return [
+                'text' => 'Refunded',
+                'color' => 'text-purple-400',
+                'bg' => 'bg-purple-900/30',
+                'badge' => 'border-purple-600'
+            ];
+        default:
+            return [
+                'text' => 'Unknown',
+                'color' => 'text-gray-400',
+                'bg' => 'bg-gray-800',
+                'badge' => 'border-gray-600'
+            ];
+    }
+}
+
+/**
+ * Create a status badge HTML
+ * 
+ * @param string $text The status text
+ * @param string $colorClass The color class
+ * @param string $bgClass The background color class
+ * @param string $badgeClass The badge class
+ * @return string The HTML for the status badge
+ */
+function createStatusBadge($text, $colorClass, $bgClass, $badgeClass) {
+    return '<span class="px-2 py-1 text-xs rounded-full ' . $bgClass . ' ' . $colorClass . ' border ' . $badgeClass . '">' . $text . '</span>';
+}
+
+/**
+ * Truncate text to a specific length
+ * 
+ * @param string $text The text to truncate
+ * @param int $length The maximum length
+ * @param string $append The string to append if truncated
+ * @return string The truncated text
+ */
+function truncateText($text, $length = 50, $append = '...') {
+    if (strlen($text) <= $length) {
+        return $text;
+    }
+    
+    return substr($text, 0, $length) . $append;
+}
+
+/**
+ * Get time ago in a human-readable format
+ * 
+ * @param string $datetime The date/time to format
+ * @return string The time ago string
+ */
+function timeAgo($datetime) {
+    $time = strtotime($datetime);
+    $now = time();
+    $diff = $now - $time;
+    
+    if ($diff < 60) {
+        return $diff . ' seconds ago';
+    } elseif ($diff < 3600) {
+        return floor($diff / 60) . ' minutes ago';
+    } elseif ($diff < 86400) {
+        return floor($diff / 3600) . ' hours ago';
+    } elseif ($diff < 604800) {
+        return floor($diff / 86400) . ' days ago';
+    } elseif ($diff < 2592000) {
+        return floor($diff / 604800) . ' weeks ago';
+    } elseif ($diff < 31536000) {
+        return floor($diff / 2592000) . ' months ago';
+    } else {
+        return floor($diff / 31536000) . ' years ago';
+    }
+}
+
+/**
+ * Check if a date is in the past
+ * 
+ * @param string $date The date to check
+ * @return bool True if date is in the past, false otherwise
+ */
+function isDatePast($date) {
+    $date = new DateTime($date);
+    $now = new DateTime();
+    
+    return $date < $now;
+}
+
+/**
+ * Check if a date is within a certain number of days
+ * 
+ * @param string $date The date to check
+ * @param int $days The number of days
+ * @return bool True if date is within the days, false otherwise
+ */
+function isDateWithinDays($date, $days) {
+    $date = new DateTime($date);
+    $now = new DateTime();
+    $interval = $now->diff($date);
+    
+    return $interval->days <= $days && $date >= $now;
+}
+
+/**
+ * Display a flash message
+ * 
+ * @param string $type The type of message (success, error, warning, info)
+ * @param string $message The message text
+ * @return string The HTML for the flash message
+ */
+function displayFlashMessage($type, $message) {
+    $icon = '';
+    $colorClass = '';
+    $bgClass = '';
+    
+    switch ($type) {
+        case 'success':
+            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
+            $colorClass = 'text-green-400';
+            $bgClass = 'bg-green-900/30 border-green-600';
+            break;
+        case 'error':
+            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+            $colorClass = 'text-red-400';
+            $bgClass = 'bg-red-900/30 border-red-600';
+            break;
+        case 'warning':
+            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>';
+            $colorClass = 'text-yellow-400';
+            $bgClass = 'bg-yellow-900/30 border-yellow-600';
+            break;
+        case 'info':
+            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+            $colorClass = 'text-blue-400';
+            $bgClass = 'bg-blue-900/30 border-blue-600';
+            break;
+        default:
+            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+            $colorClass = 'text-gray-400';
+            $bgClass = 'bg-gray-800 border-gray-600';
+    }
+    
+    return '
+    <div class="flex items-center p-4 mb-6 rounded-lg border ' . $bgClass . ' ' . $colorClass . ' backdrop-blur-sm">
+        <div class="flex-shrink-0 mr-3">
+            ' . $icon . '
+        </div>
+        <div class="flex-1">
+            <p class="font-medium">' . $message . '</p>
+        </div>
+        <button type="button" class="ml-auto focus:outline-none" onclick="this.parentElement.remove();">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>';
+}
+
+/**
+ * Get a list of payment methods
+ * 
+ * @return array Array of payment methods
+ */
+function getPaymentMethods() {
+    return [
+        'credit_card' => 'Credit Card',
+        'bank_transfer' => 'Bank Transfer',
+        'paypal' => 'PayPal',
+        'cash' => 'Cash',
+        'check' => 'Check',
+        'stripe' => 'Stripe',
+        'other' => 'Other'
+    ];
+}
+
+/**
+ * Create a glassmorphism card
+ * 
+ * @param string $title The card title
+ * @param string $content The card content
+ * @param string $additionalClass Additional CSS classes
+ * @return string The HTML for the glassmorphism card
+ */
+function createGlassCard($title, $content, $additionalClass = '') {
+    return '
+    <div class="bg-[#26002b]/50 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-[#810041]/20 mb-6 ' . $additionalClass . '">
+        ' . ($title ? '<h3 class="text-xl font-semibold mb-4 text-white">' . $title . '</h3>' : '') . '
+        <div>
+            ' . $content . '
+        </div>
+    </div>';
+}
+
+/**
+ * Generate pagination HTML
+ * 
+ * @param int $currentPage The current page number
+ * @param int $totalPages The total number of pages
+ * @param string $baseUrl The base URL for pagination links
+ * @return string The HTML for pagination
+ */
+function generatePagination($currentPage, $totalPages, $baseUrl) {
+    if ($totalPages <= 1) {
+        return '';
+    }
+    
+    $html = '<div class="flex justify-center mt-6 gap-1">';
+    
+    // Previous page link
+    if ($currentPage > 1) {
+        $html .= '<a href="' . $baseUrl . '?page=' . ($currentPage - 1) . '" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">';
+        $html .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">';
+        $html .= '<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />';
+        $html .= '</svg>';
+        $html .= '</a>';
+    } else {
+        $html .= '<span class="px-3 py-2 rounded-md text-gray-600">';
+        $html .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">';
+        $html .= '<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />';
+        $html .= '</svg>';
+        $html .= '</span>';
+    }
+    
+    // Page number links
+    $startPage = max(1, $currentPage - 2);
+    $endPage = min($totalPages, $currentPage + 2);
+    
+    if ($startPage > 1) {
+        $html .= '<a href="' . $baseUrl . '?page=1" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">1</a>';
+        if ($startPage > 2) {
+            $html .= '<span class="px-3 py-2 text-gray-400">...</span>';
+        }
+    }
+    
+    for ($i = $startPage; $i <= $endPage; $i++) {
+        if ($i == $currentPage) {
+            $html .= '<span class="px-3 py-2 rounded-md bg-[#810041] text-white">' . $i . '</span>';
+        } else {
+            $html .= '<a href="' . $baseUrl . '?page=' . $i . '" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">' . $i . '</a>';
+        }
+    }
+    
+    if ($endPage < $totalPages) {
+        if ($endPage < $totalPages - 1) {
+            $html .= '<span class="px-3 py-2 text-gray-400">...</span>';
+        }
+        $html .= '<a href="' . $baseUrl . '?page=' . $totalPages . '" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">' . $totalPages . '</a>';
+    }
+    
+    // Next page link
+    if ($currentPage < $totalPages) {
+        $html .= '<a href="' . $baseUrl . '?page=' . ($currentPage + 1) . '" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">';
+        $html .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">';
+        $html .= '<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />';
+        $html .= '</svg>';
+        $html .= '</a>';
+    } else {
+        $html .= '<span class="px-3 py-2 rounded-md text-gray-600">';
+        $html .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">';
+        $html .= '<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />';
+        $html .= '</svg>';
+        $html .= '</span>';
+    }
+    
+    $html .= '</div>';
+    
+    return $html;
+}
+
+/**
+ * Create a project progress bar
+ * 
+ * @param int $percent The percentage of progress
+ * @param string $size The size (sm, md, lg)
+ * @return string The HTML for the progress bar
+ */
+function createProgressBar($percent, $size = 'md') {
+    $height = 'h-2';
+    if ($size === 'sm') {
+        $height = 'h-1.5';
+    } elseif ($size === 'lg') {
+        $height = 'h-3';
+    }
+    
+    return '
+    <div class="w-full bg-gray-700 rounded-full ' . $height . '">
+        <div class="' . $height . ' rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b]" style="width: ' . $percent . '%"></div>
+    </div>';
+}
+
+/**
+ * Generate a form input field
+ * 
+ * @param string $type The input type
+ * @param string $name The input name
+ * @param string $label The input label
+ * @param string $value The input value
+ * @param string $placeholder The input placeholder
+ * @param bool $required Whether the input is required
+ * @param string $additionalAttributes Additional HTML attributes
+ * @return string The HTML for the form input
+ */
+function generateFormInput($type, $name, $label, $value = '', $placeholder = '', $required = false, $additionalAttributes = '') {
+    $requiredAttr = $required ? 'required' : '';
+    $requiredStar = $required ? '<span class="text-[#f2ab8b]">*</span>' : '';
+    
+    $html = '
+    <div class="mb-4">
+        <label for="' . $name . '" class="block text-sm font-medium text-gray-300 mb-1">' . $label . ' ' . $requiredStar . '</label>';
+    
+    if ($type === 'textarea') {
+        $html .= '
+        <textarea id="' . $name . '" name="' . $name . '" class="w-full px-4 py-2 bg-[#3a0042]/50 border border-[#810041]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#f2ab8b]/50" placeholder="' . $placeholder . '" ' . $requiredAttr . ' ' . $additionalAttributes . '>' . $value . '</textarea>';
+    } else {
+        $html .= '
+        <input type="' . $type . '" id="' . $name . '" name="' . $name . '" value="' . $value . '" class="w-full px-4 py-2 bg-[#3a0042]/50 border border-[#810041]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#f2ab8b]/50" placeholder="' . $placeholder . '" ' . $requiredAttr . ' ' . $additionalAttributes . '>';
+    }
+    
+    $html .= '
+    </div>';
+    
+    return $html;
+}
+
+/**
+ * Generate a form select field
+ * 
+ * @param string $name The select name
+ * @param string $label The select label
+ * @param array $options The select options
+ * @param string $selected The selected option
+ * @param bool $required Whether the select is required
+ * @param string $additionalAttributes Additional HTML attributes
+ * @return string The HTML for the form select
+ */
+function generateFormSelect($name, $label, $options, $selected = '', $required = false, $additionalAttributes = '') {
+    $requiredAttr = $required ? 'required' : '';
+    $requiredStar = $required ? '<span class="text-[#f2ab8b]">*</span>' : '';
+    
+    $html = '
+    <div class="mb-4">
+        <label for="' . $name . '" class="block text-sm font-medium text-gray-300 mb-1">' . $label . ' ' . $requiredStar . '</label>
+        <select id="' . $name . '" name="' . $name . '" class="w-full px-4 py-2 bg-[#3a0042]/50 border border-[#810041]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#f2ab8b]/50" ' . $requiredAttr . ' ' . $additionalAttributes . '>';
+    
+    foreach ($options as $value => $text) {
+        $selectedAttr = ($value == $selected) ? 'selected' : '';
+        $html .= '<option value="' . $value . '" ' . $selectedAttr . '>' . $text . '</option>';
+    }
+    
+    $html .= '
+        </select>
+    </div>';
+    
+    return $html;
+}
+
+/**
+ * Generate a form button
+ * 
+ * @param string $text The button text
+ * @param string $type The button type
+ * @param string $additionalClasses Additional CSS classes
+ * @return string The HTML for the form button
+ */
+function generateFormButton($text, $type = 'submit', $additionalClasses = '') {
+    return '
+    <button type="' . $type . '" class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition duration-300 ' . $additionalClasses . '">
+        ' . $text . '
+    </button>';
+}
+
+/**
+ * Check if a user has permission to access a resource
+ * 
+ * @param string $resource The resource to check
+ * @param string $action The action to check
+ * @return bool True if user has permission, false otherwise
+ */
+function hasPermission($resource, $action) {
+    // Make sure user is logged in
+    if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role'])) {
+        return false;
+    }
+    
+    $role = $_SESSION['user_role'];
+    
+    // Admin has all permissions
+    if ($role === 'admin') {
+        return true;
+    }
+    
+    // Define client permissions
+    if ($role === 'client') {
+        $clientPermissions = [
+            'project' => ['view'],
+            'invoice' => ['view'],
+            'payment' => ['view'],
+            'profile' => ['view', 'edit']
+        ];
+        
+        if (isset($clientPermissions[$resource]) && in_array($action, $clientPermissions[$resource])) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+/**
+ * Log an action for audit purposes
+ * 
+ * @param string $action The action performed
+ * @param string $description The description of the action
+ * @param int $userId The user ID who performed the action
+ * @return bool True if logged successfully, false otherwise
+ */
+function logAction($action, $description, $userId = null) {
+    // If no user ID provided, try to get from session
+    if ($userId === null && isset($_SESSION['user_id'])) {
+        $userId = $_SESSION['user_id'];
+    }
+    
+    // If still no user ID, set as system
+    if ($userId === null) {
+        $userId = 0; // System user
+    }
+    
+    // In a real implementation, this would be saved to database
+    // For now, we'll just return true
+    return true;
+}
+
+/**
+ * Get total payments for a project
+ * 
+ * @param int $projectId The project ID
+ * @return float The total payments
+ */
+function getProjectTotalPayments($projectId) {
+    // In a real implementation, this would query the database
+    // For now, we'll return a dummy value
+    return 0;
+}
+
+/**
+ * Get project completion percentage
+ * 
+ * @param int $projectId The project ID
+ * @return int The completion percentage
+ */
+function getProjectCompletionPercentage($projectId) {
+    // In a real implementation, this would query the database
+    // For now, we'll return a dummy value
+    return 0;
+}
+
+/**
+ * Get remaining balance for a project
+ * 
+ * @param float $totalAmount The total project amount
+ * @param float $paidAmount The amount already paid
+ * @return float The remaining balance
+ */
+function getRemainingBalance($totalAmount, $paidAmount) {
+    return max(0, $totalAmount - $paidAmount);
+}
+
+/**
+ * Calculate days until deadline
+ * 
+ * @param string $deadline The deadline date
+ * @return int|string Number of days or "Overdue" if past
+ */
+function daysUntilDeadline($deadline) {
+    if (empty($deadline)) {
+        return 'N/A';
+    }
+    
+    $deadlineDate = new DateTime($deadline);
+    $today = new DateTime();
+    
+    // If deadline is in the past
+    if ($deadlineDate < $today) {
+        $interval = $today->diff($deadlineDate);
+        return 'Overdue by ' . $interval->days . ' days';
+    }
+    
+    // If deadline is in the future
+    $interval = $today->diff($deadlineDate);
+    return $interval->days;
+}
 /**
  * Format a phone number
  * 
@@ -1045,673 +1715,4 @@ function initApp() {
 }
 
 // Call the initialization function
-initApp();<?php
-/**
- * Utility Functions
- * 
- * Core utility functions for the PayTrack application
- * Handles common operations across the application
- */
-
-// Make sure we have a session started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-/**
- * Get base URL path for the application
- * 
- * @return string The base URL path
- */
-function getBasePath() {
-    $path = dirname($_SERVER['PHP_SELF']);
-    
-    if (strpos($path, '/admin') !== false) {
-        return '..';
-    } elseif (strpos($path, '/client') !== false) {
-        return '..';
-    } else {
-        return '.';
-    }
-}
-
-/**
- * Check if the current page matches the given page name
- * Used for highlighting active navigation items
- * 
- * @param string $pageName The page name to check against
- * @return bool True if current page matches, false otherwise
- */
-function isCurrentPage($pageName) {
-    return basename($_SERVER['PHP_SELF']) === $pageName;
-}
-
-/**
- * Format a date to a readable format
- * 
- * @param string $date The date string to format
- * @param string $format The format to use (default: 'M d, Y')
- * @return string The formatted date
- */
-function formatDate($date, $format = 'M d, Y') {
-    if (empty($date)) return 'N/A';
-    
-    $dateObj = new DateTime($date);
-    return $dateObj->format($format);
-}
-
-/**
- * Format a currency amount
- * 
- * @param float $amount The amount to format
- * @param string $currency The currency symbol (default: '$')
- * @return string The formatted amount
- */
-function formatCurrency($amount, $currency = '$') {
-    if ($amount === null) return 'N/A';
-    
-    return $currency . number_format($amount, 2, '.', ',');
-}
-
-/**
- * Calculate the percentage of a value against a total
- * 
- * @param float $value The value
- * @param float $total The total
- * @return int The percentage (rounded to nearest integer)
- */
-function calculatePercentage($value, $total) {
-    if ($total == 0) return 0;
-    
-    return round(($value / $total) * 100);
-}
-
-/**
- * Generate a unique ID for various purposes
- * 
- * @param string $prefix The prefix for the ID (default: '')
- * @return string The generated ID
- */
-function generateUniqueId($prefix = '') {
-    return uniqid($prefix) . bin2hex(random_bytes(8));
-}
-
-/**
- * Get project status as a string and corresponding color class
- * 
- * @param string $status The status code
- * @return array Array containing status text and color class
- */
-function getProjectStatus($status) {
-    switch ($status) {
-        case 'not_started':
-            return [
-                'text' => 'Not Started',
-                'color' => 'text-gray-400',
-                'bg' => 'bg-gray-800',
-                'badge' => 'border-gray-600'
-            ];
-        case 'in_progress':
-            return [
-                'text' => 'In Progress',
-                'color' => 'text-blue-400',
-                'bg' => 'bg-blue-900/30',
-                'badge' => 'border-blue-600'
-            ];
-        case 'on_hold':
-            return [
-                'text' => 'On Hold',
-                'color' => 'text-yellow-400',
-                'bg' => 'bg-yellow-900/30',
-                'badge' => 'border-yellow-600'
-            ];
-        case 'completed':
-            return [
-                'text' => 'Completed',
-                'color' => 'text-green-400',
-                'bg' => 'bg-green-900/30',
-                'badge' => 'border-green-600'
-            ];
-        case 'cancelled':
-            return [
-                'text' => 'Cancelled',
-                'color' => 'text-red-400',
-                'bg' => 'bg-red-900/30',
-                'badge' => 'border-red-600'
-            ];
-        default:
-            return [
-                'text' => 'Unknown',
-                'color' => 'text-gray-400',
-                'bg' => 'bg-gray-800',
-                'badge' => 'border-gray-600'
-            ];
-    }
-}
-
-/**
- * Get payment status as a string and corresponding color class
- * 
- * @param string $status The status code
- * @return array Array containing status text and color class
- */
-function getPaymentStatus($status) {
-    switch ($status) {
-        case 'paid':
-            return [
-                'text' => 'Paid',
-                'color' => 'text-green-400',
-                'bg' => 'bg-green-900/30',
-                'badge' => 'border-green-600'
-            ];
-        case 'pending':
-            return [
-                'text' => 'Pending',
-                'color' => 'text-yellow-400',
-                'bg' => 'bg-yellow-900/30',
-                'badge' => 'border-yellow-600'
-            ];
-        case 'overdue':
-            return [
-                'text' => 'Overdue',
-                'color' => 'text-red-400',
-                'bg' => 'bg-red-900/30',
-                'badge' => 'border-red-600'
-            ];
-        case 'cancelled':
-            return [
-                'text' => 'Cancelled',
-                'color' => 'text-gray-400',
-                'bg' => 'bg-gray-800',
-                'badge' => 'border-gray-600'
-            ];
-        case 'refunded':
-            return [
-                'text' => 'Refunded',
-                'color' => 'text-purple-400',
-                'bg' => 'bg-purple-900/30',
-                'badge' => 'border-purple-600'
-            ];
-        default:
-            return [
-                'text' => 'Unknown',
-                'color' => 'text-gray-400',
-                'bg' => 'bg-gray-800',
-                'badge' => 'border-gray-600'
-            ];
-    }
-}
-
-/**
- * Create a status badge HTML
- * 
- * @param string $text The status text
- * @param string $colorClass The color class
- * @param string $bgClass The background color class
- * @param string $badgeClass The badge class
- * @return string The HTML for the status badge
- */
-function createStatusBadge($text, $colorClass, $bgClass, $badgeClass) {
-    return '<span class="px-2 py-1 text-xs rounded-full ' . $bgClass . ' ' . $colorClass . ' border ' . $badgeClass . '">' . $text . '</span>';
-}
-
-/**
- * Truncate text to a specific length
- * 
- * @param string $text The text to truncate
- * @param int $length The maximum length
- * @param string $append The string to append if truncated
- * @return string The truncated text
- */
-function truncateText($text, $length = 50, $append = '...') {
-    if (strlen($text) <= $length) {
-        return $text;
-    }
-    
-    return substr($text, 0, $length) . $append;
-}
-
-/**
- * Get time ago in a human-readable format
- * 
- * @param string $datetime The date/time to format
- * @return string The time ago string
- */
-function timeAgo($datetime) {
-    $time = strtotime($datetime);
-    $now = time();
-    $diff = $now - $time;
-    
-    if ($diff < 60) {
-        return $diff . ' seconds ago';
-    } elseif ($diff < 3600) {
-        return floor($diff / 60) . ' minutes ago';
-    } elseif ($diff < 86400) {
-        return floor($diff / 3600) . ' hours ago';
-    } elseif ($diff < 604800) {
-        return floor($diff / 86400) . ' days ago';
-    } elseif ($diff < 2592000) {
-        return floor($diff / 604800) . ' weeks ago';
-    } elseif ($diff < 31536000) {
-        return floor($diff / 2592000) . ' months ago';
-    } else {
-        return floor($diff / 31536000) . ' years ago';
-    }
-}
-
-/**
- * Check if a date is in the past
- * 
- * @param string $date The date to check
- * @return bool True if date is in the past, false otherwise
- */
-function isDatePast($date) {
-    $date = new DateTime($date);
-    $now = new DateTime();
-    
-    return $date < $now;
-}
-
-/**
- * Check if a date is within a certain number of days
- * 
- * @param string $date The date to check
- * @param int $days The number of days
- * @return bool True if date is within the days, false otherwise
- */
-function isDateWithinDays($date, $days) {
-    $date = new DateTime($date);
-    $now = new DateTime();
-    $interval = $now->diff($date);
-    
-    return $interval->days <= $days && $date >= $now;
-}
-
-/**
- * Display a flash message
- * 
- * @param string $type The type of message (success, error, warning, info)
- * @param string $message The message text
- * @return string The HTML for the flash message
- */
-function displayFlashMessage($type, $message) {
-    $icon = '';
-    $colorClass = '';
-    $bgClass = '';
-    
-    switch ($type) {
-        case 'success':
-            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
-            $colorClass = 'text-green-400';
-            $bgClass = 'bg-green-900/30 border-green-600';
-            break;
-        case 'error':
-            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
-            $colorClass = 'text-red-400';
-            $bgClass = 'bg-red-900/30 border-red-600';
-            break;
-        case 'warning':
-            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>';
-            $colorClass = 'text-yellow-400';
-            $bgClass = 'bg-yellow-900/30 border-yellow-600';
-            break;
-        case 'info':
-            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
-            $colorClass = 'text-blue-400';
-            $bgClass = 'bg-blue-900/30 border-blue-600';
-            break;
-        default:
-            $icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
-            $colorClass = 'text-gray-400';
-            $bgClass = 'bg-gray-800 border-gray-600';
-    }
-    
-    return '
-    <div class="flex items-center p-4 mb-6 rounded-lg border ' . $bgClass . ' ' . $colorClass . ' backdrop-blur-sm">
-        <div class="flex-shrink-0 mr-3">
-            ' . $icon . '
-        </div>
-        <div class="flex-1">
-            <p class="font-medium">' . $message . '</p>
-        </div>
-        <button type="button" class="ml-auto focus:outline-none" onclick="this.parentElement.remove();">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>';
-}
-
-/**
- * Get a list of payment methods
- * 
- * @return array Array of payment methods
- */
-function getPaymentMethods() {
-    return [
-        'credit_card' => 'Credit Card',
-        'bank_transfer' => 'Bank Transfer',
-        'paypal' => 'PayPal',
-        'cash' => 'Cash',
-        'check' => 'Check',
-        'stripe' => 'Stripe',
-        'other' => 'Other'
-    ];
-}
-
-/**
- * Create a glassmorphism card
- * 
- * @param string $title The card title
- * @param string $content The card content
- * @param string $additionalClass Additional CSS classes
- * @return string The HTML for the glassmorphism card
- */
-function createGlassCard($title, $content, $additionalClass = '') {
-    return '
-    <div class="bg-[#26002b]/50 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-[#810041]/20 mb-6 ' . $additionalClass . '">
-        ' . ($title ? '<h3 class="text-xl font-semibold mb-4 text-white">' . $title . '</h3>' : '') . '
-        <div>
-            ' . $content . '
-        </div>
-    </div>';
-}
-
-/**
- * Generate pagination HTML
- * 
- * @param int $currentPage The current page number
- * @param int $totalPages The total number of pages
- * @param string $baseUrl The base URL for pagination links
- * @return string The HTML for pagination
- */
-function generatePagination($currentPage, $totalPages, $baseUrl) {
-    if ($totalPages <= 1) {
-        return '';
-    }
-    
-    $html = '<div class="flex justify-center mt-6 gap-1">';
-    
-    // Previous page link
-    if ($currentPage > 1) {
-        $html .= '<a href="' . $baseUrl . '?page=' . ($currentPage - 1) . '" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">';
-        $html .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">';
-        $html .= '<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />';
-        $html .= '</svg>';
-        $html .= '</a>';
-    } else {
-        $html .= '<span class="px-3 py-2 rounded-md text-gray-600">';
-        $html .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">';
-        $html .= '<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />';
-        $html .= '</svg>';
-        $html .= '</span>';
-    }
-    
-    // Page number links
-    $startPage = max(1, $currentPage - 2);
-    $endPage = min($totalPages, $currentPage + 2);
-    
-    if ($startPage > 1) {
-        $html .= '<a href="' . $baseUrl . '?page=1" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">1</a>';
-        if ($startPage > 2) {
-            $html .= '<span class="px-3 py-2 text-gray-400">...</span>';
-        }
-    }
-    
-    for ($i = $startPage; $i <= $endPage; $i++) {
-        if ($i == $currentPage) {
-            $html .= '<span class="px-3 py-2 rounded-md bg-[#810041] text-white">' . $i . '</span>';
-        } else {
-            $html .= '<a href="' . $baseUrl . '?page=' . $i . '" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">' . $i . '</a>';
-        }
-    }
-    
-    if ($endPage < $totalPages) {
-        if ($endPage < $totalPages - 1) {
-            $html .= '<span class="px-3 py-2 text-gray-400">...</span>';
-        }
-        $html .= '<a href="' . $baseUrl . '?page=' . $totalPages . '" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">' . $totalPages . '</a>';
-    }
-    
-    // Next page link
-    if ($currentPage < $totalPages) {
-        $html .= '<a href="' . $baseUrl . '?page=' . ($currentPage + 1) . '" class="px-3 py-2 rounded-md text-gray-400 hover:text-[#f2ab8b] hover:bg-[#810041]/20">';
-        $html .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">';
-        $html .= '<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />';
-        $html .= '</svg>';
-        $html .= '</a>';
-    } else {
-        $html .= '<span class="px-3 py-2 rounded-md text-gray-600">';
-        $html .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">';
-        $html .= '<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />';
-        $html .= '</svg>';
-        $html .= '</span>';
-    }
-    
-    $html .= '</div>';
-    
-    return $html;
-}
-
-/**
- * Create a project progress bar
- * 
- * @param int $percent The percentage of progress
- * @param string $size The size (sm, md, lg)
- * @return string The HTML for the progress bar
- */
-function createProgressBar($percent, $size = 'md') {
-    $height = 'h-2';
-    if ($size === 'sm') {
-        $height = 'h-1.5';
-    } elseif ($size === 'lg') {
-        $height = 'h-3';
-    }
-    
-    return '
-    <div class="w-full bg-gray-700 rounded-full ' . $height . '">
-        <div class="' . $height . ' rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b]" style="width: ' . $percent . '%"></div>
-    </div>';
-}
-
-/**
- * Generate a form input field
- * 
- * @param string $type The input type
- * @param string $name The input name
- * @param string $label The input label
- * @param string $value The input value
- * @param string $placeholder The input placeholder
- * @param bool $required Whether the input is required
- * @param string $additionalAttributes Additional HTML attributes
- * @return string The HTML for the form input
- */
-function generateFormInput($type, $name, $label, $value = '', $placeholder = '', $required = false, $additionalAttributes = '') {
-    $requiredAttr = $required ? 'required' : '';
-    $requiredStar = $required ? '<span class="text-[#f2ab8b]">*</span>' : '';
-    
-    $html = '
-    <div class="mb-4">
-        <label for="' . $name . '" class="block text-sm font-medium text-gray-300 mb-1">' . $label . ' ' . $requiredStar . '</label>';
-    
-    if ($type === 'textarea') {
-        $html .= '
-        <textarea id="' . $name . '" name="' . $name . '" class="w-full px-4 py-2 bg-[#3a0042]/50 border border-[#810041]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#f2ab8b]/50" placeholder="' . $placeholder . '" ' . $requiredAttr . ' ' . $additionalAttributes . '>' . $value . '</textarea>';
-    } else {
-        $html .= '
-        <input type="' . $type . '" id="' . $name . '" name="' . $name . '" value="' . $value . '" class="w-full px-4 py-2 bg-[#3a0042]/50 border border-[#810041]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#f2ab8b]/50" placeholder="' . $placeholder . '" ' . $requiredAttr . ' ' . $additionalAttributes . '>';
-    }
-    
-    $html .= '
-    </div>';
-    
-    return $html;
-}
-
-/**
- * Generate a form select field
- * 
- * @param string $name The select name
- * @param string $label The select label
- * @param array $options The select options
- * @param string $selected The selected option
- * @param bool $required Whether the select is required
- * @param string $additionalAttributes Additional HTML attributes
- * @return string The HTML for the form select
- */
-function generateFormSelect($name, $label, $options, $selected = '', $required = false, $additionalAttributes = '') {
-    $requiredAttr = $required ? 'required' : '';
-    $requiredStar = $required ? '<span class="text-[#f2ab8b]">*</span>' : '';
-    
-    $html = '
-    <div class="mb-4">
-        <label for="' . $name . '" class="block text-sm font-medium text-gray-300 mb-1">' . $label . ' ' . $requiredStar . '</label>
-        <select id="' . $name . '" name="' . $name . '" class="w-full px-4 py-2 bg-[#3a0042]/50 border border-[#810041]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#f2ab8b]/50" ' . $requiredAttr . ' ' . $additionalAttributes . '>';
-    
-    foreach ($options as $value => $text) {
-        $selectedAttr = ($value == $selected) ? 'selected' : '';
-        $html .= '<option value="' . $value . '" ' . $selectedAttr . '>' . $text . '</option>';
-    }
-    
-    $html .= '
-        </select>
-    </div>';
-    
-    return $html;
-}
-
-/**
- * Generate a form button
- * 
- * @param string $text The button text
- * @param string $type The button type
- * @param string $additionalClasses Additional CSS classes
- * @return string The HTML for the form button
- */
-function generateFormButton($text, $type = 'submit', $additionalClasses = '') {
-    return '
-    <button type="' . $type . '" class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition duration-300 ' . $additionalClasses . '">
-        ' . $text . '
-    </button>';
-}
-
-/**
- * Check if a user has permission to access a resource
- * 
- * @param string $resource The resource to check
- * @param string $action The action to check
- * @return bool True if user has permission, false otherwise
- */
-function hasPermission($resource, $action) {
-    // Make sure user is logged in
-    if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role'])) {
-        return false;
-    }
-    
-    $role = $_SESSION['user_role'];
-    
-    // Admin has all permissions
-    if ($role === 'admin') {
-        return true;
-    }
-    
-    // Define client permissions
-    if ($role === 'client') {
-        $clientPermissions = [
-            'project' => ['view'],
-            'invoice' => ['view'],
-            'payment' => ['view'],
-            'profile' => ['view', 'edit']
-        ];
-        
-        if (isset($clientPermissions[$resource]) && in_array($action, $clientPermissions[$resource])) {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-/**
- * Log an action for audit purposes
- * 
- * @param string $action The action performed
- * @param string $description The description of the action
- * @param int $userId The user ID who performed the action
- * @return bool True if logged successfully, false otherwise
- */
-function logAction($action, $description, $userId = null) {
-    // If no user ID provided, try to get from session
-    if ($userId === null && isset($_SESSION['user_id'])) {
-        $userId = $_SESSION['user_id'];
-    }
-    
-    // If still no user ID, set as system
-    if ($userId === null) {
-        $userId = 0; // System user
-    }
-    
-    // In a real implementation, this would be saved to database
-    // For now, we'll just return true
-    return true;
-}
-
-/**
- * Get total payments for a project
- * 
- * @param int $projectId The project ID
- * @return float The total payments
- */
-function getProjectTotalPayments($projectId) {
-    // In a real implementation, this would query the database
-    // For now, we'll return a dummy value
-    return 0;
-}
-
-/**
- * Get project completion percentage
- * 
- * @param int $projectId The project ID
- * @return int The completion percentage
- */
-function getProjectCompletionPercentage($projectId) {
-    // In a real implementation, this would query the database
-    // For now, we'll return a dummy value
-    return 0;
-}
-
-/**
- * Get remaining balance for a project
- * 
- * @param float $totalAmount The total project amount
- * @param float $paidAmount The amount already paid
- * @return float The remaining balance
- */
-function getRemainingBalance($totalAmount, $paidAmount) {
-    return max(0, $totalAmount - $paidAmount);
-}
-
-/**
- * Calculate days until deadline
- * 
- * @param string $deadline The deadline date
- * @return int|string Number of days or "Overdue" if past
- */
-function daysUntilDeadline($deadline) {
-    if (empty($deadline)) {
-        return 'N/A';
-    }
-    
-    $deadlineDate = new DateTime($deadline);
-    $today = new DateTime();
-    
-    // If deadline is in the past
-    if ($deadlineDate < $today) {
-        $interval = $today->diff($deadlineDate);
-        return 'Overdue by ' . $interval->days . ' days';
-    }
-    
-    // If deadline is in the future
-    $interval = $today->diff($deadlineDate);
-    return $interval->days;
-}
+initApp();
