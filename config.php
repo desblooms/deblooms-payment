@@ -22,8 +22,8 @@ ini_set('display_errors', 1);
 date_default_timezone_set('UTC');
 
 // Session lifetime (30 days in seconds)
-ini_set('session.gc_maxlifetime', 30 * 24 * 60 * 60);
-session_set_cookie_params(30 * 24 * 60 * 60);
+// ini_set('session.gc_maxlifetime', 30 * 24 * 60 * 60);
+// session_set_cookie_params(30 * 24 * 60 * 60);
 
 // Other constants
 define('PROJECT_STATUSES', ['pending', 'paid', 'overdue']);
