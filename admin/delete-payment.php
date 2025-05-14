@@ -1,0 +1,1 @@
+/* Delete Payment Script */ 
