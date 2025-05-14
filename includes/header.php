@@ -2,309 +2,263 @@
 /**
  * Header Template
  * 
- * Primary header template for the PayTrack application
+ * Main header template for the PayTrack application
+ * Includes navigation and user information
  */
 
-// Make sure we have a session started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Include utility functions if not already included
-if (!function_exists('getBasePath')) {
-    require_once __DIR__ . '/functions.php';
-}
-
-// Get current page for navigation highlighting
-$currentPage = basename($_SERVER['PHP_SELF']);
-
 // Check if user is logged in
-$isLoggedIn = isset($_SESSION['user_id']);
-$userRole = $isLoggedIn ? $_SESSION['user_role'] : '';
-$userName = $isLoggedIn ? $_SESSION['user_name'] : '';
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /login.php');
+    exit;
+}
 
-// Get unread notification count if user is logged in
-$notificationCount = $isLoggedIn ? getUnreadNotificationCount($_SESSION['user_id']) : 0;
+// Get user data
+$userRole = $_SESSION['user_role'] ?? '';
+$userName = $_SESSION['user_name'] ?? 'User';
+$userInitial = strtoupper(substr($userName, 0, 1));
 
+// Determine which navigation to show based on user role
+$isAdmin = ($userRole === 'admin');
+$isClient = ($userRole === 'client');
+
+// Count unread notifications
+$notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayTrack - Client Payment Tracking</title>
-    
-    <!-- Tailwind CSS CDN -->
+    <title>PayTrack - Track Your Projects & Payments</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #810041;
-            --primary-light: #f2ab8b;
-            --dark-bg: #26002b;
-            --dark-surface: #3a0042;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'gray-custom': '#868F83',
+                        'yellow-green': '#B2C451',
+                        'sage': '#C9CF94',
+                        'silver': '#B7B7B5',
+                        'black-olive': '#353732',
+                        'mindaro': '#E7FE66',
+                        'eerie-black': '#1C1F0A',
+                        'mindaro-2': '#E6FB78',
+                        'ebony': '#676548',
+                        'mint-cream': '#EAEFEA',
+                    }
+                }
+            }
         }
-        
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #26002b 0%, #120014 100%);
-            background-attachment: fixed;
-            color: #fff;
-            min-height: 100vh;
+            background-color: #EAEFEA;
         }
         
-        .glass-card {
-            background: rgba(58, 0, 66, 0.5);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(129, 0, 65, 0.2);
-            border-radius: 16px;
+        .active-nav {
+            background-color: #E7FE66;
+            color: #1C1F0A;
         }
         
-        .gradient-text {
-            background: linear-gradient(to right, #810041, #f2ab8b);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        .dropdown {
+            display: none;
         }
         
-        .gradient-bg {
-            background: linear-gradient(to right, #810041, #f2ab8b);
+        .dropdown.show {
+            display: block;
         }
         
-        /* Mobile navigation tweaks */
-        .mobile-nav-item {
-            @apply flex items-center justify-center flex-col p-2 rounded-lg text-xs;
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
         }
-        
-        .mobile-nav-item.active {
-            @apply bg-[#810041]/20 text-[#f2ab8b];
-        }
-        
-        .mobile-nav-item:not(.active) {
-            @apply text-gray-400 hover:text-[#f2ab8b];
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: rgba(58, 0, 66, 0.3);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #810041, #f2ab8b);
-            border-radius: 3px;
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gradient-to-br from-[#26002b] to-[#120014]">
-    <!-- Top Navigation Bar -->
-    <header class="w-full py-3 px-4 bg-[#26002b]/90 backdrop-blur-md border-b border-[#810041]/20 sticky top-0 z-30">
-        <div class="container mx-auto">
-            <div class="flex items-center justify-between">
-                <!-- Left - Logo -->
+<body class="bg-mint-cream min-h-screen">
+    <header class="bg-black-olive text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="<?php echo getBasePath(); ?>/<?php echo $userRole === 'admin' ? 'admin/' : ($userRole === 'client' ? 'client/' : ''); ?>" class="flex items-center">
-                        <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-gradient-to-r from-[#810041] to-[#f2ab8b] mr-2">
-                            <span class="text-white font-bold text-xl">P</span>
-                        </div>
-                        <div>
-                            <h1 class="text-xl font-bold gradient-text">PayTrack</h1>
-                            <p class="text-xs text-gray-400">Payment Tracking System</p>
-                        </div>
+                    <a href="<?php echo $isAdmin ? '/admin/index.php' : '/client/index.php'; ?>" class="flex items-center">
+                        <span class="text-mindaro font-bold text-2xl">Pay</span>
+                        <span class="text-white font-bold text-2xl">Track</span>
                     </a>
                 </div>
                 
-                <!-- Right - User Menu & Notifications -->
-                <div class="flex items-center space-x-3">
-                    <?php if ($isLoggedIn): ?>
-                        <!-- Notifications -->
-                        <div class="relative">
-                            <button class="p-2 rounded-full text-gray-400 hover:text-[#f2ab8b] relative" id="notificationButton">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <?php if ($notificationCount > 0): ?>
-                                <span class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
+                <!-- Right Menu (Profile & Notifications) -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button id="notificationDropdownButton" class="relative p-2 rounded-full hover:bg-ebony focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <?php if ($notificationCount > 0): ?>
+                                <span class="absolute top-0 right-0 bg-yellow-green text-eerie-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
                                     <?php echo $notificationCount; ?>
                                 </span>
-                                <?php endif; ?>
-                            </button>
-                            
-                            <!-- Notification Dropdown (hidden by default) -->
-                            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 glass-card shadow-lg z-40 origin-top-right">
-                                <div class="p-3 border-b border-[#810041]/20">
-                                    <h3 class="font-medium">Notifications</h3>
-                                </div>
-                                <div class="max-h-80 overflow-y-auto">
-                                    <?php 
-                                    $notifications = getNotifications($_SESSION['user_id'], 5);
-                                    if (empty($notifications)): 
-                                    ?>
-                                    <div class="p-4 text-center text-gray-400">
-                                        <p>No notifications</p>
-                                    </div>
-                                    <?php else: ?>
-                                    <?php foreach ($notifications as $notification): ?>
-                                    <div class="p-3 border-b border-[#810041]/20 hover:bg-[#810041]/10 <?php echo $notification['read'] ? 'opacity-70' : ''; ?>">
-                                        <div class="flex">
-                                            <?php
-                                            $iconClass = 'text-blue-400';
-                                            $bgClass = 'bg-blue-900/30';
-                                            
-                                            if ($notification['level'] === 'success') {
-                                                $iconClass = 'text-green-400';
-                                                $bgClass = 'bg-green-900/30';
-                                            } elseif ($notification['level'] === 'warning') {
-                                                $iconClass = 'text-yellow-400';
-                                                $bgClass = 'bg-yellow-900/30';
-                                            } elseif ($notification['level'] === 'error') {
-                                                $iconClass = 'text-red-400';
-                                                $bgClass = 'bg-red-900/30';
-                                            }
-                                            ?>
-                                            <div class="flex-shrink-0 mr-3">
-                                                <div class="h-8 w-8 rounded-full <?php echo $bgClass; ?> flex items-center justify-center <?php echo $iconClass; ?>">
-                                                    <i class="fas fa-<?php echo $notification['level'] === 'success' ? 'check' : ($notification['level'] === 'warning' ? 'exclamation' : ($notification['level'] === 'error' ? 'times' : 'bell')); ?>"></i>
-                                                </div>
-                                            </div>
-                                            <div class="flex-1 overflow-hidden">
-                                                <p class="font-medium text-sm"><?php echo $notification['title']; ?></p>
-                                                <p class="text-gray-400 text-xs mt-1 truncate"><?php echo $notification['message']; ?></p>
-                                                <p class="text-gray-500 text-xs mt-1"><?php echo $notification['time']; ?></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="p-2 border-t border-[#810041]/20 text-center">
-                                    <a href="#" class="text-sm text-[#f2ab8b] hover:underline">View All</a>
-                                </div>
-                            </div>
-                        </div>
+                            <?php endif; ?>
+                        </button>
                         
-                        <!-- User Menu -->
-                        <div class="relative">
-                            <button class="flex items-center space-x-2 text-gray-300 hover:text-white" id="userMenuButton">
-                                <div class="h-8 w-8 rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b] flex items-center justify-center">
-                                    <span class="text-white font-medium"><?php echo substr($userName, 0, 1); ?></span>
-                                </div>
-                                <span class="hidden md:block text-sm"><?php echo $userName; ?></span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            
-                            <!-- User Menu Dropdown (hidden by default) -->
-                            <div id="userMenuDropdown" class="hidden absolute right-0 mt-2 w-48 glass-card shadow-lg z-40 origin-top-right">
-                                <div class="p-2 border-b border-[#810041]/20">
-                                    <p class="text-sm font-medium"><?php echo $userName; ?></p>
-                                    <p class="text-xs text-gray-400"><?php echo ucfirst($userRole); ?></p>
-                                </div>
-                                <div class="py-1">
-                                    <a href="<?php echo getBasePath(); ?>/<?php echo $userRole === 'admin' ? 'admin/' : 'client/'; ?>profile.php" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#810041]/20 hover:text-[#f2ab8b]">
-                                        <div class="flex items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                            </svg>
-                                            Profile
-                                        </div>
-                                    </a>
-                                    <a href="<?php echo getBasePath(); ?>/<?php echo $userRole === 'admin' ? 'admin/' : 'client/'; ?>settings.php" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#810041]/20 hover:text-[#f2ab8b]">
-                                        <div class="flex items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                            Settings
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="py-1 border-t border-[#810041]/20">
-                                    <a href="<?php echo getBasePath(); ?>/logout.php" class="block px-4 py-2 text-sm text-red-400 hover:bg-red-900/20">
-                                        <div class="flex items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                            </svg>
-                                            Logout
+                        <!-- Notification Dropdown -->
+                        <div id="notificationDropdown" class="dropdown absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-50 text-black-olive">
+                            <div class="p-3 bg-black-olive text-white font-medium flex justify-between">
+                                <span>Notifications</span>
+                                <?php if ($notificationCount > 0): ?>
+                                    <a href="#" class="text-sm text-mindaro hover:text-mindaro-2">Mark all as read</a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="max-h-64 overflow-y-auto no-scrollbar">
+                                <?php 
+                                $notifications = getNotifications($_SESSION['user_id'], 5);
+                                if (!empty($notifications)): 
+                                    foreach ($notifications as $notification):
+                                        $bgClass = $notification['read'] ? 'bg-white' : 'bg-mint-cream';
+                                ?>
+                                <div class="<?php echo $bgClass; ?> hover:bg-gray-50 border-b border-gray-100">
+                                    <a href="#" class="block p-3">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 mr-3">
+                                                <?php 
+                                                switch ($notification['level']):
+                                                    case 'success':
+                                                        echo '<div class="w-8 h-8 rounded-full bg-green-100 text-green-500 flex items-center justify-center"><i class="fas fa-check"></i></div>';
+                                                        break;
+                                                    case 'warning':
+                                                        echo '<div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center"><i class="fas fa-exclamation-triangle"></i></div>';
+                                                        break;
+                                                    case 'error':
+                                                        echo '<div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center"><i class="fas fa-times"></i></div>';
+                                                        break;
+                                                    default:
+                                                        echo '<div class="w-8 h-8 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center"><i class="fas fa-info"></i></div>';
+                                                endswitch;
+                                                ?>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-sm"><?php echo $notification['title']; ?></p>
+                                                <p class="text-xs text-gray-500 mt-1"><?php echo $notification['message']; ?></p>
+                                                <p class="text-xs text-gray-400 mt-1"><?php echo $notification['time']; ?></p>
+                                            </div>
                                         </div>
                                     </a>
                                 </div>
+                                <?php 
+                                    endforeach; 
+                                else: 
+                                ?>
+                                <div class="p-4 text-center text-gray-500">
+                                    No notifications
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="p-2 bg-white border-t border-gray-100">
+                                <a href="#" class="block text-center text-sm text-black-olive hover:text-ebony p-2">
+                                    View all notifications
+                                </a>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <!-- Login Button for guests -->
-                        <a href="<?php echo getBasePath(); ?>/login.php" class="px-4 py-2 rounded-lg bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-white text-sm font-medium hover:opacity-90 transition duration-300">
-                            Login
-                        </a>
-                    <?php endif; ?>
+                    </div>
+                    
+                    <!-- Profile -->
+                    <div class="relative">
+                        <button id="profileDropdownButton" class="flex items-center focus:outline-none">
+                            <div class="w-8 h-8 rounded-full bg-yellow-green text-eerie-black flex items-center justify-center font-bold">
+                                <?php echo $userInitial; ?>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Profile Dropdown -->
+                        <div id="profileDropdown" class="dropdown absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 text-black-olive">
+                            <div class="p-3 bg-black-olive text-white font-medium">
+                                <p><?php echo $userName; ?></p>
+                                <p class="text-xs text-gray-400 mt-1"><?php echo ucfirst($userRole); ?></p>
+                            </div>
+                            <div>
+                                <a href="<?php echo $isAdmin ? '/admin/settings.php' : '/client/profile.php'; ?>" class="block p-3 text-sm hover:bg-gray-100">
+                                    <div class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        Settings
+                                    </div>
+                                </a>
+                                <a href="/logout.php" class="block p-3 text-sm hover:bg-gray-100 border-t border-gray-100">
+                                    <div class="flex items-center text-red-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                        </svg>
+                                        Logout
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
     
-    <!-- Main Content Wrapper -->
-    <main class="flex-grow p-4 container mx-auto">
-        <?php if ($isLoggedIn): ?>
-            <?php if ($userRole === 'admin'): ?>
-                <!-- Admin Breadcrumb / Page Title would go here if needed -->
-            <?php elseif ($userRole === 'client'): ?>
-                <!-- Client Breadcrumb / Page Title would go here if needed -->
-            <?php endif; ?>
-        <?php endif; ?>
-        
-        <!-- Page content will be inserted here -->
-
-<script>
-// Handle mobile navigation toggles
-document.addEventListener('DOMContentLoaded', function() {
-    // User menu toggle
-    const userMenuButton = document.getElementById('userMenuButton');
-    const userMenuDropdown = document.getElementById('userMenuDropdown');
+    <!-- Navigation -->
+    <nav class="bg-ebony text-white shadow-md">
+        <div class="container mx-auto">
+            <div class="overflow-x-auto no-scrollbar">
+                <div class="flex space-x-1 py-1 px-2 min-w-max">
+                    <?php if ($isAdmin): ?>
+                        <a href="/admin/index.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('index.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                        </a>
+                        <a href="/admin/clients.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('clients.php') || isCurrentPage('all-clients.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-users mr-1"></i> Clients
+                        </a>
+                        <a href="/admin/projects.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('projects.php') || isCurrentPage('all-projects.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-project-diagram mr-1"></i> Projects
+                        </a>
+                        <a href="/admin/payments.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('payments.php') || isCurrentPage('all-payments.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-money-bill-wave mr-1"></i> Payments
+                        </a>
+                        <a href="/admin/reports.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('reports.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-chart-bar mr-1"></i> Reports
+                        </a>
+                        <a href="/admin/settings.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('settings.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-cog mr-1"></i> Settings
+                        </a>
+                    <?php elseif ($isClient): ?>
+                        <a href="/client/index.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('index.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                        </a>
+                        <a href="/client/project-details.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('project-details.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-project-diagram mr-1"></i> Projects
+                        </a>
+                        <a href="/client/invoices.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('invoices.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-file-invoice-dollar mr-1"></i> Invoices
+                        </a>
+                        <a href="/client/payment-history.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('payment-history.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-money-bill-wave mr-1"></i> Payments
+                        </a>
+                        <a href="/client/profile.php" class="px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors <?php echo isCurrentPage('profile.php') ? 'active-nav' : ''; ?>">
+                            <i class="fas fa-user mr-1"></i> Profile
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </nav>
     
-    if (userMenuButton && userMenuDropdown) {
-        userMenuButton.addEventListener('click', function() {
-            userMenuDropdown.classList.toggle('hidden');
-            // Hide notification dropdown when user menu is shown
-            if (notificationDropdown) {
-                notificationDropdown.classList.add('hidden');
-            }
-        });
-    }
-    
-    // Notification toggle
-    const notificationButton = document.getElementById('notificationButton');
-    const notificationDropdown = document.getElementById('notificationDropdown');
-    
-    if (notificationButton && notificationDropdown) {
-        notificationButton.addEventListener('click', function() {
-            notificationDropdown.classList.toggle('hidden');
-            // Hide user menu dropdown when notification dropdown is shown
-            if (userMenuDropdown) {
-                userMenuDropdown.classList.add('hidden');
-            }
-        });
-    }
-    
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(event) {
-        if (userMenuButton && userMenuDropdown && !userMenuButton.contains(event.target) && !userMenuDropdown.contains(event.target)) {
-            userMenuDropdown.classList.add('hidden');
-        }
-        
-        if (notificationButton && notificationDropdown && !notificationButton.contains(event.target) && !notificationDropdown.contains(event.target)) {
-            notificationDropdown.classList.add('hidden');
-        }
-    });
-});
-</script>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Page content will go here -->
