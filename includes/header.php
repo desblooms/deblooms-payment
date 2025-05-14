@@ -22,7 +22,7 @@
             background: rgba(30, 30, 30, 0.5);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
 
         /* Custom Scrollbar */
