@@ -220,7 +220,7 @@ $client = $stmt->fetch(PDO::FETCH_ASSOC);
                                         <?php echo date('M d, Y', strtotime($project['due_date'])); ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="../project_details.php?id=<?php echo $project['id']; ?>" class="text-blue-600 hover:text-blue-900">
+                                        <a href="../project-details.php?id=<?php echo $project['id']; ?>" class="text-blue-600 hover:text-blue-900">
                                             <i class="fas fa-eye"></i> View Details
                                         </a>
                                     </td>

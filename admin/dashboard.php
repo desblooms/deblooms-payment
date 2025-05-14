@@ -243,7 +243,7 @@ include_once '../includes/header.php';
                                         <a href="edit_project.php?id=<?php echo $project['id']; ?>" class="text-indigo-600 hover:text-indigo-900 mr-3">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="project_details.php?id=<?php echo $project['id']; ?>" class="text-blue-600 hover:text-blue-900 mr-3">
+                                        <a href="project-details.php?id=<?php echo $project['id']; ?>" class="text-blue-600 hover:text-blue-900 mr-3">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <a href="delete_project.php?id=<?php echo $project['id']; ?>" class="text-red-600 hover:text-red-900" 
