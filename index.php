@@ -1,551 +1,212 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayTrack - Smart Payment Tracking System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'battleship-gray': '#868F83',
-                        'yellow-green': '#B2C451',
-                        'sage': '#C9CF94',
-                        'silver': '#B7B7B5',
-                        'black-olive': '#353732',
-                        'mindaro': '#E7FE66',
-                        'eerie-black': '#1C1F0A',
-                        'mindaro-2': '#E6FB78',
-                        'ebony': '#676548',
-                        'mint-cream': '#EAEFEA',
-                    },
-                    fontFamily: {
-                        'poppins': ['Poppins', 'sans-serif']
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'slide-in': 'slideIn 0.6s ease-out forwards',
-                        'fade-in': 'fadeIn 0.8s ease-out forwards',
-                        'bounce-slow': 'bounce 3s infinite',
-                        'spin-slow': 'spin 8s linear infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        },
-                        slideIn: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' }
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
-                        }
-                    },
-                }
-            }
-        }
-    </script>
-    <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #C9CF94 0%, #E7FE66 100%);
-        }
-        
-        .glass-card {
-            backdrop-filter: blur(16px) saturate(180%);
-            background-color: rgba(255, 255, 255, 0.75);
-            border-radius: 16px;
-            border: 1px solid rgba(209, 213, 219, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-        }
-        
-        .card-hover-effect {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover-effect:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .animated-gradient {
-            background: linear-gradient(-45deg, #C9CF94, #E7FE66, #B2C451, #E6FB78);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-        }
-        
-        @keyframes gradient {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-        
-        .text-shadow {
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .circle-pattern {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            z-index: -1;
-            opacity: 0.6;
-        }
-        
-        /* Loading animation */
-        .loader {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            background: linear-gradient(135deg, #C9CF94 0%, #E7FE66 100%);
-            z-index: 1000;
-            transition: opacity 0.5s ease-out;
-        }
-        
-        .loader-hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .loader-circle {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #1C1F0A;
-            border-top: 5px solid #E7FE66;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Progress bar */
-        .progress-bar {
-            height: 4px;
-            background-color: #E7FE66;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 100;
-            width: 0%;
-            transition: width 0.3s ease-out;
-        }
-        
-        /* Mobile menu */
-        .mobile-menu {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-out;
-        }
-        
-        .mobile-menu.active {
-            transform: translateX(0);
-        }
-        
-        /* Notification dot animation */
-        .notification-dot {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 8px;
-            height: 8px;
-            background-color: #E7FE66;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(231, 254, 102, 0.7);
-            }
-            
-            70% {
-                transform: scale(1);
-                box-shadow: 0 0 0 10px rgba(231, 254, 102, 0);
-            }
-            
-            100% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(231, 254, 102, 0);
-            }
-        }
-        
-        /* Hero text animation */
-        .animate-typing {
-            overflow: hidden;
-            border-right: 3px solid #E7FE66;
-            white-space: nowrap;
-            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
-        }
-        
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
-        
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: #E7FE66 }
-        }
-    </style>
-</head>
-<body class="animated-gradient min-h-screen flex flex-col overflow-x-hidden">
-    <!-- Loading Screen -->
-    <div class="loader" id="loader">
-        <div class="loader-circle"></div>
-    </div>
+<?php
+/**
+ * PayTrack - Client Payment Portal
+ * 
+ * Landing page that redirects to the appropriate dashboard based on user role
+ * or displays a welcome screen for non-logged in users
+ */
+
+// Start session
+session_start();
+
+// Include functions
+require_once 'includes/functions.php';
+
+// Check if user is logged in
+if (isset($_SESSION['user_id'])) {
+    // Redirect based on user role
+    if ($_SESSION['user_role'] === 'admin') {
+        header('Location: admin/dashboard.php');
+        exit;
+    } else {
+        header('Location: client/dashboard.php');
+        exit;
+    }
+}
+
+// Include header
+include_once 'includes/header.php';
+?>
+
+<!-- Hero Section with Animated Elements -->
+<section class="relative min-h-[90vh] flex flex-col justify-center items-center px-4 overflow-hidden">
+    <!-- Animated background elements -->
+    <div class="absolute top-20 left-10 w-24 h-24 rounded-full bg-[#810041]/20 animate-pulse"></div>
+    <div class="absolute bottom-20 right-10 w-32 h-32 rounded-full bg-[#f2ab8b]/20 animate-pulse delay-1000"></div>
+    <div class="absolute top-1/4 right-1/4 w-40 h-40 rounded-full bg-[#26002b]/30 animate-pulse delay-700"></div>
     
-    <!-- Progress bar -->
-    <div class="progress-bar" id="progressBar"></div>
-    
-    <!-- Background patterns -->
-    <div class="circle-pattern bg-yellow-green w-64 h-64 top-20 -left-20 animate-spin-slow"></div>
-    <div class="circle-pattern bg-mindaro w-96 h-96 bottom-40 -right-40 animate-spin-slow"></div>
-    
-    <header class="bg-eerie-black py-4 px-4 shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <div class="mr-2 text-mindaro text-3xl animate-float">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h1 class="text-white text-xl font-bold">Pay<span class="text-mindaro">Track</span></h1>
+    <div class="relative z-10 max-w-md w-full mx-auto text-center">
+        <!-- Logo with glow effect -->
+        <div class="mb-6">
+            <div class="inline-block relative">
+                <div class="absolute inset-0 blur-xl bg-[#f2ab8b]/30 rounded-full"></div>
+                <h1 class="relative text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#810041] to-[#f2ab8b] mb-2">PayTrack</h1>
             </div>
-            <nav class="hidden md:block">
-                <div class="flex items-center space-x-6">
-                    <a href="#features" class="text-white hover:text-mindaro transition duration-300">Features</a>
-                    <a href="#pricing" class="text-white hover:text-mindaro transition duration-300">Pricing</a>
-                    <a href="#testimonials" class="text-white hover:text-mindaro transition duration-300">Testimonials</a>
-                    <a href="login.php" class="bg-mindaro text-eerie-black px-5 py-2 rounded-full font-medium hover:bg-mindaro-2 transition duration-300 shadow-lg">
-                        Login
-                    </a>
+            <h2 class="text-xl text-white">Simplify Your Payment Management</h2>
+        </div>
+        
+        <!-- Floating illustrations -->
+        <div class="flex justify-center mb-8">
+            <div class="w-24 h-24 bg-[#810041]/30 rounded-2xl flex items-center justify-center float-animation shadow-lg">
+                <i class="fas fa-money-bill-wave text-3xl text-[#f2ab8b]"></i>
+            </div>
+            <div class="w-24 h-24 bg-[#3a0042]/30 -ml-4 mt-8 rounded-2xl flex items-center justify-center float-animation-delay shadow-lg">
+                <i class="fas fa-project-diagram text-3xl text-[#f2ab8b]"></i>
+            </div>
+            <div class="w-24 h-24 bg-[#26002b]/30 -ml-4 rounded-2xl flex items-center justify-center float-animation shadow-lg">
+                <i class="fas fa-file-invoice-dollar text-3xl text-[#f2ab8b]"></i>
+            </div>
+        </div>
+        
+        <div class="bg-[#26002b]/50 backdrop-blur-md rounded-xl p-6 border border-[#810041]/20 mb-8 shadow-lg">
+            <p class="text-gray-300 mb-4">Track payments, manage projects, and stay on top of your finances with our intuitive platform.</p>
+            <p class="text-gray-400 text-sm">Designed for freelancers, agencies, and businesses of all sizes.</p>
+        </div>
+        
+        <!-- CTA Button -->
+        <a href="login.php" class="inline-block w-full sm:w-auto bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-white font-medium py-3 px-8 rounded-xl shadow-lg hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+            <div class="flex items-center justify-center">
+                <span>Login to Your Account</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- App Preview with Glowing Border -->
+<section class="py-12 px-4">
+    <div class="max-w-lg mx-auto relative">
+        <div class="absolute -inset-1 bg-gradient-to-r from-[#810041] to-[#f2ab8b] rounded-xl blur-md opacity-75"></div>
+        <div class="relative bg-[#26002b]/50 backdrop-blur-md rounded-xl overflow-hidden border border-[#810041]/20 shadow-xl">
+            <div class="flex justify-center p-1">
+                <!-- Phone mockup for the app preview -->
+                <div class="relative border-8 border-[#26002b] rounded-3xl overflow-hidden shadow-lg w-full max-w-xs">
+                    <!-- Notch -->
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/3 h-5 bg-[#26002b] rounded-b-xl z-10"></div>
+                    
+                    <!-- App Screenshot -->
+                    <img src="assets/images/app-preview.png" alt="PayTrack App Preview" class="w-full h-auto" onerror="this.src='https://via.placeholder.com/375x812/18001c/f2ab8b?text=PayTrack+App+Interface'">
                 </div>
-            </nav>
-            <button id="mobileMenuButton" class="md:hidden text-white text-xl">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </header>
-    
-    <!-- Mobile menu -->
-    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 h-full w-4/5 bg-eerie-black z-50 p-6">
-        <div class="flex justify-end mb-6">
-            <button id="closeMenuButton" class="text-white text-xl">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="flex flex-col space-y-6">
-            <a href="#features" class="text-white hover:text-mindaro transition duration-300 text-lg">Features</a>
-            <a href="#pricing" class="text-white hover:text-mindaro transition duration-300 text-lg">Pricing</a>
-            <a href="#testimonials" class="text-white hover:text-mindaro transition duration-300 text-lg">Testimonials</a>
-            <a href="login.php" class="bg-mindaro text-eerie-black px-5 py-2 rounded-full font-medium hover:bg-mindaro-2 transition duration-300 shadow-lg text-center mt-4">
-                Login
-            </a>
+            </div>
         </div>
     </div>
+</section>
 
-    <main class="flex-grow flex flex-col items-center justify-center px-4 py-10 relative">
-        <!-- Hero Section -->
-        <div class="max-w-lg w-full mb-16">
-            <div class="glass-card overflow-hidden mb-6 opacity-0 animate-fade-in" style="animation-delay: 0.2s">
-                <div class="p-8">
-                    <div class="flex items-center justify-center mb-6">
-                        <div class="relative">
-                            <div class="text-6xl text-yellow-green animate-float">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="notification-dot"></div>
-                        </div>
-                    </div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-black-olive text-center mb-6 text-shadow">
-                        <span class="block">Track Payments.</span>
-                        <span class="block mt-1">Manage Projects.</span>
-                        <span class="block mt-1 text-yellow-green">Grow Business.</span>
-                    </h2>
-                    <p class="text-battleship-gray text-center mb-8">
-                        The all-in-one platform for managing client projects and payments. Get a clear view of your business at a glance.
-                    </p>
-                    <div class="flex flex-col space-y-4">
-                        <a href="login.php" class="bg-mindaro text-eerie-black text-center py-3 px-6 rounded-lg font-medium hover:bg-mindaro-2 transition duration-300 shadow-lg flex items-center justify-center space-x-2 transform hover:scale-105">
-                            <span>Login to Your Account</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                        <div class="text-center text-battleship-gray text-sm">
-                            <p>Administrator? <a href="admin/login.php" class="text-yellow-green hover:underline">Login here</a></p>
-                        </div>
-                    </div>
+<!-- Features Section with Glass Cards -->
+<section id="features" class="py-12 px-4">
+    <div class="max-w-md mx-auto">
+        <h2 class="text-2xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-[#810041] to-[#f2ab8b]">Key Features</h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Feature 1 -->
+            <div class="bg-[#26002b]/50 backdrop-blur-md rounded-xl p-5 border border-[#810041]/20 hover:border-[#f2ab8b]/40 transition duration-300 shadow-lg">
+                <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
                 </div>
+                <h3 class="text-lg font-semibold mb-2 text-white">Project Management</h3>
+                <p class="text-gray-400 text-sm">Track all your projects with status updates and deadline reminders.</p>
             </div>
+            
+            <!-- Feature 2 -->
+            <div class="bg-[#26002b]/50 backdrop-blur-md rounded-xl p-5 border border-[#810041]/20 hover:border-[#f2ab8b]/40 transition duration-300 shadow-lg">
+                <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2 text-white">Invoice Management</h3>
+                <p class="text-gray-400 text-sm">Create and track professional invoices with auto-reminders.</p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="bg-[#26002b]/50 backdrop-blur-md rounded-xl p-5 border border-[#810041]/20 hover:border-[#f2ab8b]/40 transition duration-300 shadow-lg">
+                <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2 text-white">Payment Tracking</h3>
+                <p class="text-gray-400 text-sm">Monitor payment status and record transactions instantly.</p>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="bg-[#26002b]/50 backdrop-blur-md rounded-xl p-5 border border-[#810041]/20 hover:border-[#f2ab8b]/40 transition duration-300 shadow-lg">
+                <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2 text-white">Client Portal</h3>
+                <p class="text-gray-400 text-sm">Give clients real-time access to projects and invoices.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-            <!-- Mockup Display -->
-            <div class="relative my-12 opacity-0 animate-fade-in" style="animation-delay: 0.4s">
-                <div class="flex justify-center">
-                    <div class="relative border-8 border-eerie-black rounded-3xl shadow-2xl w-64 h-auto overflow-hidden">
-                        <div class="bg-eerie-black h-6 relative">
-                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-1.5 bg-silver rounded-full"></div>
-                        </div>
-                        <img src="/api/placeholder/320/640" alt="PayTrack App" class="w-full object-cover" />
-                        <div class="bg-eerie-black h-6"></div>
+<!-- Testimonial Section -->
+<section class="py-12 px-4">
+    <div class="max-w-md mx-auto">
+        <div class="bg-[#26002b]/50 backdrop-blur-md rounded-xl p-6 border border-[#810041]/20 shadow-lg relative overflow-hidden">
+            <!-- Decorative elements -->
+            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-r from-[#810041] to-[#f2ab8b] opacity-10 rounded-bl-full"></div>
+            <div class="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-r from-[#810041] to-[#f2ab8b] opacity-10 rounded-tr-full"></div>
+            
+            <div class="relative z-10">
+                <svg class="w-10 h-10 text-[#f2ab8b]/30 mb-4" fill="currentColor" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 8c-4.418 0-8 3.582-8 8s3.582 8 8 8c4.418 0 8-3.582 8-8s-3.582-8-8-8zm0 14c-3.314 0-6-2.686-6-6s2.686-6 6-6c3.314 0 6 2.686 6 6s-2.686 6-6 6zM24 8c-4.418 0-8 3.582-8 8s3.582 8 8 8c4.418 0 8-3.582 8-8s-3.582-8-8-8zm0 14c-3.314 0-6-2.686-6-6s2.686-6 6-6c3.314 0 6 2.686 6 6s-2.686 6-6 6z"></path>
+                </svg>
+                
+                <p class="text-gray-300 mb-6 italic">PayTrack has completely transformed how we manage our client payments. The real-time tracking and automated reminders have improved our cash flow by 40%.</p>
+                
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b] flex items-center justify-center text-white font-bold">S</div>
+                    <div class="ml-3">
+                        <h4 class="text-white font-medium">Sarah Johnson</h4>
+                        <p class="text-gray-400 text-sm">Creative Director</p>
                     </div>
                 </div>
-                <!-- Animated circles -->
-                <div class="absolute -top-4 -left-4 w-12 h-12 bg-mindaro rounded-full opacity-70 animate-pulse-slow"></div>
-                <div class="absolute -bottom-4 -right-4 w-16 h-16 bg-yellow-green rounded-full opacity-70 animate-float"></div>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Features Section -->
-        <div id="features" class="container mx-auto my-12">
-            <h2 class="text-2xl font-bold text-eerie-black text-center mb-10">Powerful Features</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-card p-6 card-hover-effect opacity-0 animate-slide-in" style="animation-delay: 0.1s">
-                    <div class="text-yellow-green text-3xl mb-3 animate-float">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <h3 class="font-bold text-black-olive mb-2">Track Payments</h3>
-                    <p class="text-sm text-battleship-gray">Monitor all incoming payments and keep track of your project finances in real-time with intuitive dashboards.</p>
-                </div>
-                
-                <div class="glass-card p-6 card-hover-effect opacity-0 animate-slide-in" style="animation-delay: 0.2s">
-                    <div class="text-yellow-green text-3xl mb-3 animate-float">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h3 class="font-bold text-black-olive mb-2">Manage Projects</h3>
-                    <p class="text-sm text-battleship-gray">Keep all your projects organized with status updates, milestone tracking, and progress visualization.</p>
-                </div>
-                
-                <div class="glass-card p-6 card-hover-effect opacity-0 animate-slide-in" style="animation-delay: 0.3s">
-                    <div class="text-yellow-green text-3xl mb-3 animate-float">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                    </div>
-                    <h3 class="font-bold text-black-olive mb-2">Easy Invoicing</h3>
-                    <p class="text-sm text-battleship-gray">Create and send professional invoices to clients with just a few clicks. Auto-reminders for pending payments.</p>
-                </div>
-                
-                <div class="glass-card p-6 card-hover-effect opacity-0 animate-slide-in" style="animation-delay: 0.4s">
-                    <div class="text-yellow-green text-3xl mb-3 animate-float">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3 class="font-bold text-black-olive mb-2">Insightful Reports</h3>
-                    <p class="text-sm text-battleship-gray">Get powerful insights about your business performance with detailed analytics and visualized data.</p>
-                </div>
-                
-                <div class="glass-card p-6 card-hover-effect opacity-0 animate-slide-in" style="animation-delay: 0.5s">
-                    <div class="text-yellow-green text-3xl mb-3 animate-float">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3 class="font-bold text-black-olive mb-2">Mobile Optimized</h3>
-                    <p class="text-sm text-battleship-gray">Access your dashboard on the go with our fully responsive mobile interface designed for phones and tablets.</p>
-                </div>
-                
-                <div class="glass-card p-6 card-hover-effect opacity-0 animate-slide-in" style="animation-delay: 0.6s">
-                    <div class="text-yellow-green text-3xl mb-3 animate-float">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <h3 class="font-bold text-black-olive mb-2">Smart Notifications</h3>
-                    <p class="text-sm text-battleship-gray">Stay informed with timely alerts about payment receipts, approaching deadlines, and client activity.</p>
-                </div>
-            </div>
-        </div>
+<!-- Final CTA Section -->
+<section class="py-12 px-4 mb-10">
+    <div class="max-w-md mx-auto bg-[#26002b]/50 backdrop-blur-md rounded-xl p-6 border border-[#810041]/20 text-center shadow-lg">
+        <h2 class="text-2xl font-bold mb-4 text-white">Ready to Get Started?</h2>
+        <p class="text-gray-300 mb-6">Join thousands of businesses who use PayTrack to simplify their payment management.</p>
         
-        <!-- How It Works -->
-        <div class="container mx-auto my-16">
-            <h2 class="text-2xl font-bold text-eerie-black text-center mb-10">How It Works</h2>
-            <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
-                <div class="glass-card p-6 text-center w-full md:w-1/3 opacity-0 animate-fade-in" style="animation-delay: 0.2s">
-                    <div class="w-16 h-16 rounded-full bg-yellow-green flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">1</div>
-                    <h3 class="font-bold text-black-olive mb-2">Create Project</h3>
-                    <p class="text-sm text-battleship-gray">Add new projects, set milestones, and invite clients to collaborate.</p>
-                </div>
-                
-                <div class="glass-card p-6 text-center w-full md:w-1/3 opacity-0 animate-fade-in" style="animation-delay: 0.4s">
-                    <div class="w-16 h-16 rounded-full bg-yellow-green flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">2</div>
-                    <h3 class="font-bold text-black-olive mb-2">Generate Invoice</h3>
-                    <p class="text-sm text-battleship-gray">Create professional invoices based on project progress or completed milestones.</p>
-                </div>
-                
-                <div class="glass-card p-6 text-center w-full md:w-1/3 opacity-0 animate-fade-in" style="animation-delay: 0.6s">
-                    <div class="w-16 h-16 rounded-full bg-yellow-green flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">3</div>
-                    <h3 class="font-bold text-black-olive mb-2">Track Results</h3>
-                    <p class="text-sm text-battleship-gray">Monitor payments, analyze performance, and grow your business with data insights.</p>
-                </div>
+        <a href="login.php" class="inline-block w-full bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-white font-medium py-3 px-6 rounded-xl shadow-lg hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+            <div class="flex items-center justify-center">
+                <span>Login to Your Account</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
             </div>
-        </div>
-        
-        <!-- Testimonials Section -->
-        <div id="testimonials" class="container mx-auto my-16">
-            <h2 class="text-2xl font-bold text-eerie-black text-center mb-10">What Our Clients Say</h2>
-            <div class="glass-card p-8 opacity-0 animate-fade-in" style="animation-delay: 0.3s">
-                <div class="flex flex-col items-center text-center">
-                    <div class="w-20 h-20 rounded-full overflow-hidden mb-4">
-                        <img src="/api/placeholder/200/200" alt="Client" class="w-full h-full object-cover" />
-                    </div>
-                    <div class="text-yellow-green mb-2">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="text-battleship-gray italic mb-4">"PayTrack transformed how we manage client payments. The mobile interface makes it easy to check project status and payment history while on the go."</p>
-                    <h4 class="font-bold text-black-olive">Sarah Johnson</h4>
-                    <p class="text-sm text-battleship-gray">Design Studio Owner</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- CTA Section -->
-        <div class="container mx-auto my-16">
-            <div class="glass-card p-8 text-center opacity-0 animate-fade-in" style="animation-delay: 0.3s">
-                <h2 class="text-2xl font-bold text-black-olive mb-4">Ready to streamline your payment tracking?</h2>
-                <p class="text-battleship-gray mb-6">Join thousands of businesses using PayTrack to manage projects and payments efficiently.</p>
-                <a href="login.php" class="inline-block bg-mindaro text-eerie-black py-3 px-8 rounded-lg font-medium hover:bg-mindaro-2 transition duration-300 shadow-lg transform hover:scale-105">
-                    Get Started Today
-                </a>
-            </div>
-        </div>
-    </main>
+        </a>
+    </div>
+</section>
 
-    <footer class="bg-eerie-black text-mint-cream py-8 mt-auto">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-                <div class="flex items-center mb-4 md:mb-0">
-                    <div class="mr-2 text-mindaro text-2xl">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h1 class="text-white text-xl font-bold">Pay<span class="text-mindaro">Track</span></h1>
-                </div>
-                <div class="flex space-x-4">
-                    <a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div>
-                    <h3 class="text-mindaro font-semibold mb-3">Company</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">About Us</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Our Team</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Careers</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-mindaro font-semibold mb-3">Resources</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Blog</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Help Center</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Tutorials</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">API Documentation</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-mindaro font-semibold mb-3">Legal</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Terms of Service</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Privacy Policy</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">Cookie Policy</a></li>
-                        <li><a href="#" class="text-mint-cream hover:text-mindaro transition duration-300">GDPR Compliance</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="text-center text-sm border-t border-gray-700 pt-6">
-                <p>&copy; <?php echo date('Y'); ?> PayTrack. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+<style>
+    /* Animation styles */
+    .float-animation {
+        animation: float 6s ease-in-out infinite;
+    }
+    .float-animation-delay {
+        animation: float 6s ease-in-out 2s infinite;
+    }
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+</style>
 
-    <script>
-        // Page load animation
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('loader').classList.add('loader-hidden');
-            }, 1000);
-        });
-        
-        // Progress bar on scroll
-        window.addEventListener('scroll', function() {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            document.getElementById('progressBar').style.width = scrolled + '%';
-        });
-        
-        // Mobile menu toggle
-        document.getElementById('mobileMenuButton').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.add('active');
-        });
-        
-        document.getElementById('closeMenuButton').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.remove('active');
-        });
-        
-        // Scroll animation
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animationPlayState = 'running';
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.animate-slide-in, .animate-fade-in').forEach(element => {
-            element.style.animationPlayState = 'paused';
-            observer.observe(element);
-        });
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-                
-                // Close mobile menu if open
-                document.getElementById('mobileMenu').classList.remove('active');
-            });
-        });
-    </script>
-</body>
-</html>
+<?php
+// Include footer
+include_once 'includes/footer.php';
+?>
