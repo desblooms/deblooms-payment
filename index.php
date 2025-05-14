@@ -340,7 +340,7 @@ if ($isAdmin) {
     <!-- Footer -->
     <footer class="bg-white py-4 shadow-inner mt-8">
         <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
-            &copy; <?php echo date('Y'); ?> Payment Status Platform. All rights reserved.
+            &copy; <?php echo date('Y'); ?> Desblooms. All rights reserved.
         </div>
     </footer>
 </body>
