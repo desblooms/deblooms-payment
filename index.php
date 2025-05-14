@@ -1,1 +1,232 @@
 /* Main Index Page */ 
+<?php
+require_once 'config.php';
+require_once 'includes/functions.php';
+require_once 'includes/header.php';
+?>
+
+<div class="min-h-screen bg-gradient-to-br from-[#18001c] to-[#2a0032] text-gray-100 flex flex-col">
+    <!-- Hero Section -->
+    <section class="flex-grow flex flex-col md:flex-row items-center justify-center px-6 py-16 md:py-28">
+        <div class="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#810041] to-[#f2ab8b]">
+                    Project Manager
+                </span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-gray-300">
+                Track your projects and payments in one place
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <a href="login.php" class="bg-[#810041] hover:bg-[#9a0050] text-white font-medium py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                    Log In
+                </a>
+                <a href="#features" class="border border-[#f2ab8b] text-[#f2ab8b] hover:bg-[#f2ab8b] hover:text-[#18001c] font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Learn More
+                </a>
+            </div>
+        </div>
+        <div class="md:w-1/2 flex justify-center">
+            <div class="relative w-full max-w-md">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#810041] to-[#f2ab8b] rounded-lg transform rotate-2 blur-sm"></div>
+                <div class="relative bg-[#2a0032] border border-[#3a0042] p-6 rounded-lg shadow-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b] flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                </svg>
+                            </div>
+                            <h3 class="ml-3 text-xl font-semibold text-white">Project Status</h3>
+                        </div>
+                        <div class="bg-[#3a0042] p-1 rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f2ab8b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-3 bg-[#3a0042] rounded-lg flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-white">Website Redesign</h4>
+                                <p class="text-sm text-gray-400">Due: May 25, 2025</p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="h-2.5 w-24 bg-gray-700 rounded-full mr-2">
+                                    <div class="h-2.5 rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b]" style="width: 70%"></div>
+                                </div>
+                                <span class="text-sm text-[#f2ab8b]">70%</span>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-[#3a0042] rounded-lg flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-white">Mobile App Development</h4>
+                                <p class="text-sm text-gray-400">Due: June 10, 2025</p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="h-2.5 w-24 bg-gray-700 rounded-full mr-2">
+                                    <div class="h-2.5 rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b]" style="width: 45%"></div>
+                                </div>
+                                <span class="text-sm text-[#f2ab8b]">45%</span>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-[#3a0042] rounded-lg flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-white">SEO Optimization</h4>
+                                <p class="text-sm text-gray-400">Due: May 18, 2025</p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="h-2.5 w-24 bg-gray-700 rounded-full mr-2">
+                                    <div class="h-2.5 rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b]" style="width: 90%"></div>
+                                </div>
+                                <span class="text-sm text-[#f2ab8b]">90%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-center">
+                        <a href="login.php" class="inline-flex items-center text-[#f2ab8b] hover:text-white">
+                            View all projects
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 px-6 bg-[#22002a]">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 text-white">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#810041] to-[#f2ab8b]">
+                    Features
+                </span>
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-[#2a0032] p-6 rounded-lg border border-[#3a0042] transform transition duration-300 hover:scale-105">
+                    <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-white">Project Tracking</h3>
+                    <p class="text-gray-400">Monitor project progress in real-time with detailed status updates and milestone tracking.</p>
+                </div>
+                <div class="bg-[#2a0032] p-6 rounded-lg border border-[#3a0042] transform transition duration-300 hover:scale-105">
+                    <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-white">Payment Management</h3>
+                    <p class="text-gray-400">View invoices, track payments, and get notified about upcoming payment schedules.</p>
+                </div>
+                <div class="bg-[#2a0032] p-6 rounded-lg border border-[#3a0042] transform transition duration-300 hover:scale-105">
+                    <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-white">Secure Access</h3>
+                    <p class="text-gray-400">Individual client logins ensure that your project information remains private and secure.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 px-6">
+        <div class="max-w-4xl mx-auto bg-gradient-to-r from-[#810041] to-[#f2ab8b] rounded-xl p-1">
+            <div class="bg-[#2a0032] rounded-lg p-8 text-center">
+                <h2 class="text-3xl font-bold mb-4 text-white">Ready to get started?</h2>
+                <p class="text-gray-300 mb-6 max-w-lg mx-auto">Log in to your client portal to view your projects, track payments, and stay updated on progress.</p>
+                <a href="login.php" class="inline-block bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-white font-medium py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 hover:shadow-lg">
+                    Log In Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 px-6 bg-[#22002a]">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 text-white">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#810041] to-[#f2ab8b]">
+                    Client Testimonials
+                </span>
+            </h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-[#2a0032] p-6 rounded-lg border border-[#3a0042]">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b] flex items-center justify-center text-white font-bold text-lg">
+                            SB
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-semibold text-white">Sarah Brown</h4>
+                            <p class="text-gray-400">Marketing Director</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 italic">"This platform has completely transformed how we manage our projects. The payment tracking is seamless, and having a dedicated portal for each client is game-changing."</p>
+                    <div class="mt-4 flex text-[#f2ab8b]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="bg-[#2a0032] p-6 rounded-lg border border-[#3a0042]">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 rounded-full bg-gradient-to-r from-[#810041] to-[#f2ab8b] flex items-center justify-center text-white font-bold text-lg">
+                            JD
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-semibold text-white">John Davis</h4>
+                            <p class="text-gray-400">Tech Entrepreneur</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 italic">"The transparency this platform offers is invaluable. I can check my project status anytime and see exactly where my payments are going. Highly recommend!"</p>
+                    <div class="mt-4 flex text-[#f2ab8b]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<?php
+require_once 'includes/footer.php';
+?>
