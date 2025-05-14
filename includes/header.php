@@ -6,11 +6,19 @@
  * Includes navigation and user information
  */
 
+// Make sure we have a session started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: /login.php');
     exit;
 }
+
+// Include functions
+require_once __DIR__ . '/functions.php';
 
 // Get user data
 $userRole = $_SESSION['user_role'] ?? '';
@@ -23,6 +31,9 @@ $isClient = ($userRole === 'client');
 
 // Count unread notifications
 $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
+
+// Get base path for assets
+$basePath = getBasePath();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,16 +47,16 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
             theme: {
                 extend: {
                     colors: {
-                        'gray-custom': '#868F83',
-                        'yellow-green': '#B2C451',
-                        'sage': '#C9CF94',
-                        'silver': '#B7B7B5',
-                        'black-olive': '#353732',
-                        'mindaro': '#E7FE66',
-                        'eerie-black': '#1C1F0A',
-                        'mindaro-2': '#E6FB78',
-                        'ebony': '#676548',
-                        'mint-cream': '#EAEFEA',
+                        'penn-blue': '#03083F',
+                        'oxford-blue': '#010331',
+                        'picton-blue': '#31A5D4',
+                        'pale-azure': '#7BD9FF',
+                        'prussian-blue': '#142D4B',
+                        'alice-blue': '#F6FAFF',
+                        'sandy-brown': '#FCA464',
+                        'oxford-blue-2': '#01032A',
+                        'orange-pantone': '#FB5C05',
+                        'light-cyan': '#CDF5FD'
                     }
                 }
             }
@@ -55,12 +66,12 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #EAEFEA;
+            background-color: #F6FAFF;
         }
         
         .active-nav {
-            background-color: #E7FE66;
-            color: #1C1F0A;
+            background-color: #FB5C05;
+            color: #F6FAFF;
         }
         
         .dropdown {
@@ -83,14 +94,14 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
         }
     </style>
 </head>
-<body class="bg-mint-cream min-h-screen">
-    <header class="bg-black-olive text-white shadow-md">
+<body class="bg-alice-blue min-h-screen">
+    <header class="bg-penn-blue text-white shadow-md">
         <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="<?php echo $isAdmin ? '/admin/index.php' : '/client/index.php'; ?>" class="flex items-center">
-                        <span class="text-mindaro font-bold text-2xl">Pay</span>
+                        <span class="text-pale-azure font-bold text-2xl">Pay</span>
                         <span class="text-white font-bold text-2xl">Track</span>
                     </a>
                 </div>
@@ -99,23 +110,23 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
                 <div class="flex items-center space-x-4">
                     <!-- Notifications -->
                     <div class="relative">
-                        <button id="notificationDropdownButton" class="relative p-2 rounded-full hover:bg-ebony focus:outline-none">
+                        <button id="notificationDropdownButton" class="relative p-2 rounded-full hover:bg-oxford-blue focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
                             <?php if ($notificationCount > 0): ?>
-                                <span class="absolute top-0 right-0 bg-yellow-green text-eerie-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                <span class="absolute top-0 right-0 bg-orange-pantone text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                                     <?php echo $notificationCount; ?>
                                 </span>
                             <?php endif; ?>
                         </button>
                         
                         <!-- Notification Dropdown -->
-                        <div id="notificationDropdown" class="dropdown absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-50 text-black-olive">
-                            <div class="p-3 bg-black-olive text-white font-medium flex justify-between">
+                        <div id="notificationDropdown" class="dropdown absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-50 text-oxford-blue-2">
+                            <div class="p-3 bg-prussian-blue text-white font-medium flex justify-between">
                                 <span>Notifications</span>
                                 <?php if ($notificationCount > 0): ?>
-                                    <a href="#" class="text-sm text-mindaro hover:text-mindaro-2">Mark all as read</a>
+                                    <a href="#" class="text-sm text-pale-azure hover:text-light-cyan">Mark all as read</a>
                                 <?php endif; ?>
                             </div>
                             <div class="max-h-64 overflow-y-auto no-scrollbar">
@@ -123,7 +134,7 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
                                 $notifications = getNotifications($_SESSION['user_id'], 5);
                                 if (!empty($notifications)): 
                                     foreach ($notifications as $notification):
-                                        $bgClass = $notification['read'] ? 'bg-white' : 'bg-mint-cream';
+                                        $bgClass = $notification['read'] ? 'bg-white' : 'bg-alice-blue';
                                 ?>
                                 <div class="<?php echo $bgClass; ?> hover:bg-gray-50 border-b border-gray-100">
                                     <a href="#" class="block p-3">
@@ -141,7 +152,7 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
                                                         echo '<div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center"><i class="fas fa-times"></i></div>';
                                                         break;
                                                     default:
-                                                        echo '<div class="w-8 h-8 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center"><i class="fas fa-info"></i></div>';
+                                                        echo '<div class="w-8 h-8 rounded-full bg-picton-blue/20 text-picton-blue flex items-center justify-center"><i class="fas fa-info"></i></div>';
                                                 endswitch;
                                                 ?>
                                             </div>
@@ -163,7 +174,7 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
                                 <?php endif; ?>
                             </div>
                             <div class="p-2 bg-white border-t border-gray-100">
-                                <a href="#" class="block text-center text-sm text-black-olive hover:text-ebony p-2">
+                                <a href="#" class="block text-center text-sm text-prussian-blue hover:text-penn-blue p-2">
                                     View all notifications
                                 </a>
                             </div>
@@ -173,7 +184,7 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
                     <!-- Profile -->
                     <div class="relative">
                         <button id="profileDropdownButton" class="flex items-center focus:outline-none">
-                            <div class="w-8 h-8 rounded-full bg-yellow-green text-eerie-black flex items-center justify-center font-bold">
+                            <div class="w-8 h-8 rounded-full bg-orange-pantone text-white flex items-center justify-center font-bold">
                                 <?php echo $userInitial; ?>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
@@ -182,8 +193,8 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
                         </button>
                         
                         <!-- Profile Dropdown -->
-                        <div id="profileDropdown" class="dropdown absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 text-black-olive">
-                            <div class="p-3 bg-black-olive text-white font-medium">
+                        <div id="profileDropdown" class="dropdown absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 text-prussian-blue">
+                            <div class="p-3 bg-penn-blue text-white font-medium">
                                 <p><?php echo $userName; ?></p>
                                 <p class="text-xs text-gray-400 mt-1"><?php echo ucfirst($userRole); ?></p>
                             </div>
@@ -214,7 +225,7 @@ $notificationCount = getUnreadNotificationCount($_SESSION['user_id']);
     </header>
     
     <!-- Navigation -->
-    <nav class="bg-ebony text-white shadow-md">
+    <nav class="bg-oxford-blue-2 text-white shadow-md">
         <div class="container mx-auto">
             <div class="overflow-x-auto no-scrollbar">
                 <div class="flex space-x-1 py-1 px-2 min-w-max">
