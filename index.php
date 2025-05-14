@@ -33,9 +33,9 @@ if (isset($_SESSION['user_id'])) {
 <?php include 'includes/header.php'; ?>
 
 <!-- Landing Page Content -->
-<div class="flex flex-col min-h-[90vh] justify-center items-center px-4 py-12 md:py-24">
+<div class="flex flex-col min-h-[90vh] justify-center items-center px-4 py-8">
     <!-- Hero Section -->
-    <div class="glass w-full max-w-md md:max-w-lg rounded-2xl overflow-hidden shadow-xl mb-8">
+    <div class="glass w-full max-w-md rounded-2xl overflow-hidden shadow-xl mb-8 border border-[#810041]/20">
         <div class="relative">
             <!-- Hero Background with Gradient Overlay -->
             <div class="h-48 bg-gradient-to-r from-[#810041] to-[#18001c] flex items-center justify-center">
@@ -48,8 +48,8 @@ if (isset($_SESSION['user_id'])) {
             
             <!-- Content -->
             <div class="p-6 text-center">
-                <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-transparent bg-clip-text mb-3">Welcome to PayTrack</h1>
-                <p class="text-gray-300 mb-6">Simplify your payment tracking and client collaboration with our modern platform.</p>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-transparent bg-clip-text mb-3">Welcome to PayTrack</h1>
+                <p class="text-gray-300 mb-6">Streamline your payment tracking and client collaboration with our modern platform.</p>
                 
                 <div class="flex flex-col space-y-4">
                     <a href="login.php" class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] text-white font-medium py-3 px-6 rounded-lg hover:opacity-90 transition duration-300 flex items-center justify-center">
@@ -64,48 +64,60 @@ if (isset($_SESSION['user_id'])) {
     </div>
     
     <!-- Feature Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-md md:max-w-4xl">
+    <div class="grid grid-cols-1 gap-4 w-full max-w-md">
         <!-- Feature 1 -->
         <div class="glass rounded-xl p-5 border border-[#810041]/20">
-            <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                </svg>
+            <div class="flex items-start">
+                <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-white mb-1">Project Tracking</h3>
+                    <p class="text-gray-400 text-sm">Track all your projects with real-time updates on progress and payments.</p>
+                </div>
             </div>
-            <h3 class="text-lg font-semibold text-white mb-2">Project Tracking</h3>
-            <p class="text-gray-400 text-sm">Track all your projects with real-time updates on progress and payments.</p>
         </div>
         
         <!-- Feature 2 -->
         <div class="glass rounded-xl p-5 border border-[#810041]/20">
-            <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+            <div class="flex items-start">
+                <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-white mb-1">Payment Management</h3>
+                    <p class="text-gray-400 text-sm">Secure and transparent payment tracking for all your client transactions.</p>
+                </div>
             </div>
-            <h3 class="text-lg font-semibold text-white mb-2">Payment Management</h3>
-            <p class="text-gray-400 text-sm">Secure and transparent payment tracking for all your client transactions.</p>
         </div>
         
         <!-- Feature 3 -->
         <div class="glass rounded-xl p-5 border border-[#810041]/20">
-            <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+            <div class="flex items-start">
+                <div class="bg-gradient-to-r from-[#810041] to-[#f2ab8b] w-12 h-12 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-white mb-1">Client Portal</h3>
+                    <p class="text-gray-400 text-sm">Dedicated client accounts with secure access to invoices and project details.</p>
+                </div>
             </div>
-            <h3 class="text-lg font-semibold text-white mb-2">Client Portal</h3>
-            <p class="text-gray-400 text-sm">Dedicated client accounts with secure access to invoices and project details.</p>
         </div>
     </div>
 </div>
 
 <!-- Benefit Section -->
-<div class="w-full bg-[#18001c]/50 py-12 mt-8 backdrop-blur-sm">
+<div class="w-full bg-[#18001c]/50 py-10 mt-6 backdrop-blur-sm">
     <div class="container mx-auto px-4">
-        <h2 class="text-xl md:text-2xl font-bold text-center text-white mb-8">Why Choose PayTrack?</h2>
+        <h2 class="text-xl font-bold text-center text-white mb-6">Why Choose PayTrack?</h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 gap-4 max-w-md mx-auto">
             <!-- Benefit 1 -->
             <div class="flex items-start">
                 <div class="flex-shrink-0 mt-1">
